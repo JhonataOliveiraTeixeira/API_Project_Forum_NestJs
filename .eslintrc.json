@@ -1,3 +1,8 @@
 {
-    "extends": "@rocketseat/eslint-config/node"
+    "extends": "@rocketseat/eslint-config/node",
+    "root": true,
+    "rules": {
+        "no-useless-constructor": "off",
+        "prettier/prettier": 0
+    }
 }
