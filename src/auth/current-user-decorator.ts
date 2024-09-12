@@ -1,9 +1,10 @@
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { TokenSchema } from "./jwt.strategy";
+import { ExecutionContext, createParamDecorator } from '@nestjs/common'
+import { UserPayload } from './jwt.strategy'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const CurrentUser = createParamDecorator((_:unknown, context: ExecutionContext)=>{
-  const request = context.switchToHttp().getRequest()
+export const CurrentUser = createParamDecorator(
+  (_: never, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest()
 
-  return request.user as TokenSchema
-})
+    return request.user as UserPayload
+  },
+)

@@ -9,7 +9,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "Question" (
+CREATE TABLE "questions" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -18,14 +18,14 @@ CREATE TABLE "Question" (
     "updated_at" TIMESTAMP(3),
     "author_id" TEXT NOT NULL,
 
-    CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "questions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Question_slug_key" ON "Question"("slug");
+CREATE UNIQUE INDEX "questions_slug_key" ON "questions"("slug");
 
 -- AddForeignKey
-ALTER TABLE "Question" ADD CONSTRAINT "Question_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "questions" ADD CONSTRAINT "questions_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
