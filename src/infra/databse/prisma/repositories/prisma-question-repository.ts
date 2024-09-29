@@ -48,11 +48,10 @@ export class PrismaQuestionRespository implements QuestionsRepository {
   async findManyRecent({ page }: PaginationParms): Promise<Question[]> {
     const questions = await this.primsa.question.findMany({
       orderBy:{
-        createdAt: "desc",
-
+        createdAt: "desc"
       },
       take: 20,
-      skip: (page -1 * 20)
+      skip: ((page - 1) * 20)
     })
     return questions.map(question =>{
       return PrismaQuestionMapper.toDomain(question)

@@ -1,8 +1,9 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/databse/prisma/prisma.service'
 import { z } from 'zod'
+import { FetchRecenteQuestionUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions/fetch-recent-questions'
+import { QuestionPresenter } from '../presenter/question-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -18,20 +19,19 @@ type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 @Controller('/questions')
 @UseGuards(JwtAuthGuard)
 export class FetchRecentQuestionsController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private fetchRecent: FetchRecenteQuestionUseCase) {}
 
   @Get()
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const perPage = 1
-
-    const questions = await this.prisma.question.findMany({
-      take: perPage,
-      skip: (page - 1) * perPage,
-      orderBy: {
-        createdAt: 'desc',
-      },
+    const result = await this.fetchRecent.execute({
+      page,
     })
 
-    return { questions }
+    // TODO: Pode verificar ou não se o retorno foi um sucesso ou erro, apesar de que se é uma query paginada deve dar sempre um valor válido
+    // if(result.isLeft()){
+    //   throw new Error()
+    // }
+
+    return { questions: result.value!.question.map(QuestionPresenter.toHTTP) }
   }
 }
