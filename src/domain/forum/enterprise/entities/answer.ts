@@ -10,7 +10,7 @@ export interface Answerprops {
   content: string
   attachments: AnswerAttachmentList
   createAt: Date
-  updateAt?: Date
+  updateAt?: Date | null
 }
 
 export class Answer extends AggregateRoot<Answerprops> {
