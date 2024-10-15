@@ -1,7 +1,15 @@
-import { Body, Controller, Post, UsePipes } from '@nestjs/common'
+import {
+  BadRequestException,
+  Body,
+  ConflictException,
+  Controller,
+  Post,
+  UsePipes,
+} from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student/authenticate-student'
+import { StudentAlreadyExistError } from '@/domain/forum/application/errors/student-already-exist-error'
 
 const authenticateBodySchema = z.object({
   email: z.string().email(),
@@ -24,7 +32,13 @@ export class AuthenticateController {
       password,
     })
     if (result.isLeft()) {
-      throw new Error()
+      const error = result.value
+      switch (error.constructor) {
+        case StudentAlreadyExistError:
+          throw new ConflictException(error.message)
+        default:
+          throw new BadRequestException(error.message)
+      }
     }
 
     const { accessToken } = result.value

@@ -1,4 +1,10 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common'
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
@@ -27,10 +33,9 @@ export class FetchRecentQuestionsController {
       page,
     })
 
-    // TODO: Pode verificar ou não se o retorno foi um sucesso ou erro, apesar de que se é uma query paginada deve dar sempre um valor válido
-    // if(result.isLeft()){
-    //   throw new Error()
-    // }
+    if (result.isLeft()) {
+      throw new BadRequestException()
+    }
 
     return { questions: result.value!.question.map(QuestionPresenter.toHTTP) }
   }
