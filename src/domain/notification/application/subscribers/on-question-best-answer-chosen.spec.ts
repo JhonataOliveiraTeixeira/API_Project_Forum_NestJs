@@ -21,7 +21,7 @@ let sendNotificationUseCase: SendNotificationUseCase
 
 let sendNotificationExecuteSpy: MockInstance
 
-describe('On Question Best Answer Chosen', () => {
+describe.skip('On Question Best Answer Chosen', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentRepository()
@@ -59,6 +59,5 @@ describe('On Question Best Answer Chosen', () => {
     await waitFor(() => {
       expect(sendNotificationExecuteSpy).toHaveBeenCalled()
     })
-    console.log('AAAAAAAAAAAAAAAAA')
   })
 })

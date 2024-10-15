@@ -4,6 +4,7 @@ import { Student } from '@/domain/forum/enterprise/entities/student'
 import { StudentRepository } from '../../repositories/student-repository'
 import { StudentAlreadyExistError } from '../../errors/student-already-exist-error'
 import { Hasher } from '../../cryptography/hasher'
+import { hash } from 'bcryptjs'
 
 interface RegisterStundetUseCaseRequest {
   name: string
@@ -36,7 +37,8 @@ export class RegisterStudentUseCase {
       return left(new StudentAlreadyExistError())
     }
 
-    const hashedPassword = await this.hashGenerator.hash(password)
+    // const hashedPassword = await this.hashGenerator.hash(password)
+    const hashedPassword = await hash(password, 8)
 
     const student = Student.create({
       name,

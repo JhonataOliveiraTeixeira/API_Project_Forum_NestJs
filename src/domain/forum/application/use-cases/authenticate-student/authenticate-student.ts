@@ -7,7 +7,6 @@ import { Encrypter } from '../../cryptography/encrypter'
 import { WrongCredntialsError } from '../../errors/wrong-credentials-error'
 
 interface AuthenticateStudentUseCaseRequest {
-  name: string
   email: string
   password: string
 }
@@ -31,9 +30,13 @@ export class AuthenticateStudentUseCase {
     email,
     password,
   }: AuthenticateStudentUseCaseRequest): Promise<AuthenticateStudentUseCaseResponse> {
+    
     const student = await this.studentRepository.findByEmail(email)
 
+
     if (!student) {
+      console.log("Erro")
+
       return left(new WrongCredntialsError())
     }
 
@@ -43,6 +46,7 @@ export class AuthenticateStudentUseCase {
     ) 
 
     if(!comparePassword){
+      console.log("Erro")
       return left(new WrongCredntialsError())
 
     }
