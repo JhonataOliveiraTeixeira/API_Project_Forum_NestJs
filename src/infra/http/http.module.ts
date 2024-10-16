@@ -12,24 +12,29 @@ import { AuthenticateStudentUseCase } from "@/domain/forum/application/use-cases
 import { CryptographyModule } from "../cryptography/cryptography.module";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { GetQuestionBySlugUseCase } from "@/domain/forum/application/use-cases/get-question-by-slug/get-question-by-slug";
+import { GetQuestionBySlugsController } from "./controllers/get-question-by-slug.controller";
 
 @Module({
-  imports:[DatabaseModule, CryptographyModule],
+  imports: [DatabaseModule, CryptographyModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
     CreateQuestionController,
     FetchRecentQuestionsController,
+    GetQuestionBySlugsController
   ],
-  providers:[
+  providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard
     },
+    DatabaseModule,
+    GetQuestionBySlugUseCase,
     CreateQuestionUseCase,
     FetchRecenteQuestionUseCase,
     RegisterStudentUseCase,
     AuthenticateStudentUseCase
   ]
 })
-export class HttpModule{}
+export class HttpModule { }
