@@ -1,6 +1,7 @@
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 import { AnswerRepository } from '../../repositories/answres-repository'
 import { Either, right } from '@/core/either'
+import { Injectable } from '@nestjs/common'
 
 interface FecthQuestionAnswersRequest {
   page: number
@@ -14,12 +15,12 @@ type FecthQuestionAnswersResponse = Either<
   }
 >
 
+@Injectable()
 export class FecthQuestionAnswersUseCase {
-  constructor(private answerRepository: AnswerRepository) {}
+  constructor(private answerRepository: AnswerRepository) { }
 
   async execute({
     questionId,
-
     page,
   }: FecthQuestionAnswersRequest): Promise<FecthQuestionAnswersResponse> {
     const answers = await this.answerRepository.findByQuestionId(questionId, {

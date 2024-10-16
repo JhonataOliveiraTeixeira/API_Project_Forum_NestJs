@@ -7,7 +7,7 @@ import { PrismaAnswerMapper } from '../../mappers/prisma-answer-mappers'
 
 @Injectable()
 export class PrismaAnswerRepository implements AnswerRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(answer: Answer): Promise<void> {
     const data = PrismaAnswerMapper.toPrisma(answer)
@@ -54,7 +54,7 @@ export class PrismaAnswerRepository implements AnswerRepository {
   ): Promise<Answer[]> {
     const answers = await this.prisma.answer.findMany({
       where: {
-        id: questionId,
+        questionId,
       },
       orderBy: {
         createdAt: 'desc',

@@ -5,7 +5,7 @@ export abstract class AnswerRepository {
   abstract findById(answerId: string): Promise<Answer | null>
   abstract findByQuestionId(
     questionId: string,
-    params: PaginationParms,
+    { page }: PaginationParms,
   ): Promise<Answer[]>
 
   abstract create(answer: Answer): Promise<void>

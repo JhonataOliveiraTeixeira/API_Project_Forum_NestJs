@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class AnswerFactory {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async makePrismaAnswer(data: Partial<Answerprops> = {}): Promise<Answer> {
     const answer = makeAnswer(data)
@@ -14,7 +14,6 @@ export class AnswerFactory {
     await this.prisma.answer.create({
       data: PrismaAnswerMapper.toPrisma(answer),
     })
-
     return answer
   }
 }
