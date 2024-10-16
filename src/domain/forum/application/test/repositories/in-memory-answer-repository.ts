@@ -10,9 +10,9 @@ export class InMemoryAnswerRepository implements AnswerRepository {
 
   constructor(
     private answerAttachmentRepositooty: AnswerAttachmentRepository,
-  ) {}
+  ) { }
 
-  async findByAnswerId(answerId: string, { page }: PaginationParms) {
+  async findByQuestionId(answerId: string, { page }: PaginationParms) {
     const answers = this.items
       .filter((item) => item.questionId.toString() === answerId)
       .slice((page - 1) * 20, page * 20)
