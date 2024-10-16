@@ -6,7 +6,7 @@ export interface QuestionCommentRepository {
   delete(questionComment: QuestionComment): Promise<void>
   findById(id: string): Promise<QuestionComment | void>
   findManyByQuestionId(
-    questiondId: string,
+    questionId: string,
     params: PaginationParms,
   ): Promise<QuestionComment[]>
 }

@@ -2,29 +2,67 @@ import { PaginationParms } from '@/core/repositories/pagination-parms'
 import { AnswerRepository } from '@/domain/forum/application/repositories/answres-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 import { Injectable } from '@nestjs/common'
+import { PrismaService } from '../prisma.service'
+import { PrismaAnswerMapper } from '../../mappers/prisma-answer-mappers'
 
 @Injectable()
 export class PrismaAnswerRepository implements AnswerRepository {
-  findById(answerId: string): Promise<Answer | null> {
-    throw new Error('Method not implemented.')
+  constructor(private prisma: PrismaService) {}
+
+  async create(answer: Answer): Promise<void> {
+    const data = PrismaAnswerMapper.toPrisma(answer)
+    await this.prisma.answer.create({
+      data,
+    })
   }
 
-  findByAnswerId(
+  async delete(answer: Answer): Promise<void> {
+    await this.prisma.answer.delete({
+      where: {
+        id: answer.id.toString(),
+      },
+    })
+  }
+
+  async save(answer: Answer): Promise<void> {
+    const data = PrismaAnswerMapper.toPrisma(answer)
+    await this.prisma.answer.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    })
+  }
+
+  async findById(answerId: string): Promise<Answer | null> {
+    const answer = await this.prisma.answer.findUnique({
+      where: {
+        id: answerId,
+      },
+    })
+
+    if (!answer) {
+      return null
+    }
+
+    return PrismaAnswerMapper.toDomain(answer)
+  }
+
+  async findByQuestionId(
     questionId: string,
-    params: PaginationParms,
+    { page }: PaginationParms,
   ): Promise<Answer[]> {
-    throw new Error('Method not implemented.')
-  }
+    const answers = await this.prisma.answer.findMany({
+      where: {
+        id: questionId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
 
-  create(answer: Answer): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  delete(answer: Answer): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  save(answer: Answer): Promise<void> {
-    throw new Error('Method not implemented.')
+    return answers.map(PrismaAnswerMapper.toDomain)
   }
 }

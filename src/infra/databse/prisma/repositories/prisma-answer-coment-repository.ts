@@ -2,25 +2,56 @@ import { PaginationParms } from '@/core/repositories/pagination-parms'
 import { AnswerCommentRepository } from '@/domain/forum/application/repositories/answer-comment-repository'
 import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comment'
 import { Injectable } from '@nestjs/common'
+import { PrismaAnswerCommentMapper } from '../../mappers/prisma-answer-comment-mapper'
+import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaAnswerComentRepository implements AnswerCommentRepository {
-  findById(id: string): Promise<AnswerComment | null> {
-    throw new Error('Method not implemented.')
+  constructor(private prisma: PrismaService) {}
+
+  async findById(id: string): Promise<AnswerComment | null> {
+    const comment = await this.prisma.comment.findUnique({
+      where: {
+        id,
+      },
+    })
+    if (!comment) {
+      return null
+    }
+
+    return PrismaAnswerCommentMapper.toDomain(comment)
   }
 
-  create(answerComment: AnswerComment): Promise<void> {
-    throw new Error('Method not implemented.')
+  async create(answerComment: AnswerComment): Promise<void> {
+    const data = PrismaAnswerCommentMapper.toPrisma(answerComment)
+    this.prisma.comment.create({
+      data,
+    })
   }
 
-  delete(answerComment: AnswerComment): Promise<void> {
-    throw new Error('Method not implemented.')
+  async delete(answerComment: AnswerComment): Promise<void> {
+    await this.prisma.comment.delete({
+      where: {
+        id: answerComment.id.toString(),
+      },
+    })
   }
 
-  findManyByAnswerId(
+  async findManyByAnswerId(
     answerId: string,
-    params: PaginationParms,
+    { page }: PaginationParms,
   ): Promise<AnswerComment[]> {
-    throw new Error('Method not implemented.')
+    const comments = await this.prisma.comment.findMany({
+      where: {
+        id: answerId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+
+    return comments.map(PrismaAnswerCommentMapper.toDomain)
   }
 }
