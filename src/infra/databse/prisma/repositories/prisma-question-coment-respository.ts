@@ -26,11 +26,14 @@ export class PrismaQuestionComent implements QuestionCommentRepository {
   }
 
   async findById(id: string): Promise<QuestionComment | void> {
-    await this.prisma.comment.findUnique({
+    const comment = await this.prisma.comment.findUnique({
       where: {
         id,
       },
     })
+    if (comment) {
+      return PrismaQuestionCommentMapper.toDomain(comment)
+    }
   }
 
   async findManyByQuestionId(
@@ -39,7 +42,7 @@ export class PrismaQuestionComent implements QuestionCommentRepository {
   ): Promise<QuestionComment[]> {
     const comments = await this.prisma.comment.findMany({
       where: {
-        id: questionId,
+        originQuestionId: questionId,
       },
       orderBy: {
         createdAt: 'desc',

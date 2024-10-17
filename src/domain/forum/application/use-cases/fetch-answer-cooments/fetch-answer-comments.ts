@@ -1,6 +1,7 @@
 import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comment'
 import { AnswerCommentRepository } from '../../repositories/answer-comment-repository'
 import { Either, right } from '@/core/either'
+import { Injectable } from '@nestjs/common'
 
 interface FetchAnswerCommentsRequest {
   page: number
@@ -14,8 +15,9 @@ type FetchAnswerCommentsResponse = Either<
   }
 >
 
+@Injectable()
 export class FetchAnswerCommentsUseCase {
-  constructor(private answerCommentRepository: AnswerCommentRepository) {}
+  constructor(private answerCommentRepository: AnswerCommentRepository) { }
 
   async execute({
     answerId,

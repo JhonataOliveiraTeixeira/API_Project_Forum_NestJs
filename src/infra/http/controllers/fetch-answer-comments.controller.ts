@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { FecthQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answer/fetch-question-answer'
-import { AnswerPresenter } from '../presenter/answer-presenter'
+import { CommentPresenter } from '../presenter/comment-presenter'
+import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-cooments/fetch-answer-comments'
 
 const pageQueryParamSchema = z
   .string()
@@ -18,22 +18,23 @@ const pageQueryParamSchema = z
   .pipe(z.number().min(1))
 const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
-@Controller('/questions/:questionId/recent-answers')
-export class FetchQuestionAnswersController {
-  constructor(private fetchQuestionAnswers: FecthQuestionAnswersUseCase) {}
+
+@Controller('/answers/:answerId/comments')
+export class FetchAnswerCommentsController {
+  constructor(private fetchAnswerComments: FetchAnswerCommentsUseCase) { }
   @Get()
   async handle(
     @Query('page', queryValidationPipe) page: PageQueryParamSchema,
-    @Param('questionId') questionId: string,
+    @Param('answerId') answerId: string,
   ) {
-    const result = await this.fetchQuestionAnswers.execute({
+    const result = await this.fetchAnswerComments.execute({
       page,
-      questionId,
+      answerId,
     })
     if (result.isLeft()) {
       throw new BadRequestException()
     }
-    const answers = result.value.answers
-    return { answers: answers.map(AnswerPresenter.toHTTP) }
+    const comments = result.value.answersComments
+    return { comments: comments.map(CommentPresenter.toHTTP) }
   }
 }

@@ -17,7 +17,7 @@ type FecthQuestionAnswersResponse = Either<
 
 @Injectable()
 export class FecthQuestionAnswersUseCase {
-  constructor(private answerRepository: AnswerRepository) { }
+  constructor(private answerRepository: AnswerRepository) {}
 
   async execute({
     questionId,

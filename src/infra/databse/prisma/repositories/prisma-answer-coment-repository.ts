@@ -7,9 +7,10 @@ import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaAnswerComentRepository implements AnswerCommentRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findById(id: string): Promise<AnswerComment | null> {
+    console.log(id)
     const comment = await this.prisma.comment.findUnique({
       where: {
         id,
@@ -24,7 +25,7 @@ export class PrismaAnswerComentRepository implements AnswerCommentRepository {
 
   async create(answerComment: AnswerComment): Promise<void> {
     const data = PrismaAnswerCommentMapper.toPrisma(answerComment)
-    this.prisma.comment.create({
+    await this.prisma.comment.create({
       data,
     })
   }
@@ -43,7 +44,7 @@ export class PrismaAnswerComentRepository implements AnswerCommentRepository {
   ): Promise<AnswerComment[]> {
     const comments = await this.prisma.comment.findMany({
       where: {
-        id: answerId,
+        orginAnswerId: answerId,
       },
       orderBy: {
         createdAt: 'desc',
