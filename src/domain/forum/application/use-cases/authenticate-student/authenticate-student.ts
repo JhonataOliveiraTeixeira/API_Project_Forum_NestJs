@@ -24,18 +24,17 @@ export class AuthenticateStudentUseCase {
     private studentRepository: StudentRepository,
     private compare: Compare,
     private encrypter: Encrypter,
-  ) {}
+  ) { }
 
   async execute({
     email,
     password,
   }: AuthenticateStudentUseCaseRequest): Promise<AuthenticateStudentUseCaseResponse> {
-    
+
     const student = await this.studentRepository.findByEmail(email)
 
 
     if (!student) {
-      console.log("Erro")
 
       return left(new WrongCredntialsError())
     }
@@ -43,15 +42,14 @@ export class AuthenticateStudentUseCase {
     const comparePassword = await this.compare.comapre(
       password,
       student.password,
-    ) 
+    )
 
-    if(!comparePassword){
-      console.log("Erro")
+    if (!comparePassword) {
       return left(new WrongCredntialsError())
 
     }
 
-    const accessToken = await this.encrypter.encrypt({ sub: student.id.toString()})
+    const accessToken = await this.encrypter.encrypt({ sub: student.id.toString() })
 
     return right({
       accessToken

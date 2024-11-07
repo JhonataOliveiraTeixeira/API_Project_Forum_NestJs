@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { QuestionAttachment } from '@/domain/forum/enterprise/entities/question-attachment'
-import { Attachment as PrismaQuestionAttachment} from '@prisma/client'
+import { Prisma, Attachment as PrismaQuestionAttachment } from '@prisma/client'
 
 export class PrismaQuestionAttachmentMapper {
   static toDomain(prismaQuestionAttachment: PrismaQuestionAttachment) {
-    if(!prismaQuestionAttachment.originQuestionId){
+    if (!prismaQuestionAttachment.originQuestionId) {
       throw new Error('Invalid attachment type.')
     }
     return QuestionAttachment.create(
@@ -15,5 +15,26 @@ export class PrismaQuestionAttachmentMapper {
       },
       new UniqueEntityID(prismaQuestionAttachment.id),
     )
+  }
+
+  static toPrismaUpdateMany(
+    attachemnts: QuestionAttachment[]
+  ): Prisma.AttachmentUpdateManyArgs {
+
+    const attachemntsId = attachemnts.map((attachment) => {
+      return attachment.attachmentId.toString()
+    })
+
+    return {
+      where: {
+        id: {
+          in: attachemntsId,
+        },
+      },
+      data: {
+        originQuestionId: attachemnts[0].questionId.toString(),
+      },
+    }
+
   }
 }

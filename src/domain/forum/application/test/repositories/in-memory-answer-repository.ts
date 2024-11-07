@@ -12,7 +12,16 @@ export class InMemoryAnswerRepository implements AnswerRepository {
     private answerAttachmentRepositooty: AnswerAttachmentRepository,
   ) { }
 
-  async findByQuestionId(answerId: string, { page }: PaginationParms) {
+  async findByQuestionId(questionId: string, { page }: PaginationParms): Promise<Answer[]> {
+    const answer = this.items.filter((item) =>
+      item.questionId.toString() === questionId
+    ).slice((page - 1) * 20, page - 20)
+
+    return answer
+
+  }
+
+  async findByAnswerId(answerId: string, { page }: PaginationParms) {
     const answers = this.items
       .filter((item) => item.questionId.toString() === answerId)
       .slice((page - 1) * 20, page * 20)
@@ -32,6 +41,11 @@ export class InMemoryAnswerRepository implements AnswerRepository {
 
   async create(answer: Answer) {
     this.items.push(answer)
+    this.answerAttachmentRepositooty.createMany(
+      answer.attachments.getItems(),
+    )
+
+
 
     DomainEvents.dispatchEventsForAggregate(answer.id)
   }
@@ -47,6 +61,15 @@ export class InMemoryAnswerRepository implements AnswerRepository {
     const itemIndex = this.items.findIndex((item) => item.id === answer.id)
 
     this.items[itemIndex] = answer
+
+    this.answerAttachmentRepositooty.createMany(
+      answer.attachments.getNewItems(),
+    )
+
+    this.answerAttachmentRepositooty.deleteMany(
+      answer.attachments.getRemovedItems(),
+    )
+
     DomainEvents.dispatchEventsForAggregate(answer.id)
   }
 }

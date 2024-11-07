@@ -1,5 +1,5 @@
 import { BadRequestException, Controller, Get, Param } from '@nestjs/common'
-import { QuestionPresenter } from '../presenter/question-presenter'
+import { QuestionPresenter } from '../pipes/presenter/question-presenter'
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug/get-question-by-slug'
 
 @Controller('/questions/:slug')

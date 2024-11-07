@@ -5,40 +5,48 @@ import { Question } from '@/domain/forum/enterprise/entities/question'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaQuestionMapper } from '../../mappers/prisma-question-mapper'
+import { QuestionAttachmentRepository } from '@/domain/forum/application/repositories/question-attachment-repository'
 
 @Injectable()
 export class PrismaQuestionRespository implements QuestionsRepository {
-  constructor(private primsa: PrismaService) {}
+  constructor(
+    private primsa: PrismaService,
+    private questionAttachmentsRepository: QuestionAttachmentRepository
+  ) { }
 
   async create(question: Question): Promise<void> {
     const data = PrismaQuestionMapper.toPrisma(question)
-    
+
     await this.primsa.question.create({
       data
     })
+
+    await this.questionAttachmentsRepository.createMany(
+      question.attachments.getItems()
+    )
   }
 
   async findBySlug(slug: string): Promise<Question | null> {
     const question = await this.primsa.question.findUnique({
-      where:{
+      where: {
         slug
       }
     })
-    if(!question){
+    if (!question) {
       return null
     }
 
     return PrismaQuestionMapper.toDomain(question)
   }
-  
+
 
   async findById(id: string): Promise<Question | null> {
     const question = await this.primsa.question.findUnique({
-      where:{
+      where: {
         id
       }
     })
-    if(!question){
+    if (!question) {
       return null
     }
 
@@ -47,22 +55,22 @@ export class PrismaQuestionRespository implements QuestionsRepository {
 
   async findManyRecent({ page }: PaginationParms): Promise<Question[]> {
     const questions = await this.primsa.question.findMany({
-      orderBy:{
+      orderBy: {
         createdAt: "desc"
       },
       take: 20,
       skip: ((page - 1) * 20)
     })
-    return questions.map(question =>{
+    return questions.map(question => {
       return PrismaQuestionMapper.toDomain(question)
     })
   }
 
   async delete(question: Question): Promise<void> {
     const data = PrismaQuestionMapper.toPrisma(question)
-    
+
     await this.primsa.question.delete({
-      where:{
+      where: {
         id: data.id
       }
     })
@@ -70,12 +78,23 @@ export class PrismaQuestionRespository implements QuestionsRepository {
 
   async save(question: Question): Promise<void> {
     const data = PrismaQuestionMapper.toPrisma(question)
-    
-    await this.primsa.question.update({
-      where:{
-        id: data.id
-      },
-      data
-    })
+
+    await Promise.all([
+
+      this.primsa.question.update({
+        where: {
+          id: data.id
+        },
+        data
+      }),
+
+      this.questionAttachmentsRepository.createMany(
+        question.attachments.getItems()
+      ),
+      this.questionAttachmentsRepository.deleteMany(
+        question.attachments.getRemovedItems()
+      )
+
+    ])
   }
 }

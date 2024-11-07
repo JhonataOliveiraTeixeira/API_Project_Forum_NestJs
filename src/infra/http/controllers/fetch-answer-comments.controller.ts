@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { CommentPresenter } from '../presenter/comment-presenter'
+import { CommentPresenter } from '../pipes/presenter/comment-presenter'
 import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-cooments/fetch-answer-comments'
 
 const pageQueryParamSchema = z
@@ -21,7 +21,7 @@ type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
 @Controller('/answers/:answerId/comments')
 export class FetchAnswerCommentsController {
-  constructor(private fetchAnswerComments: FetchAnswerCommentsUseCase) { }
+  constructor(private fetchAnswerComments: FetchAnswerCommentsUseCase) {}
   @Get()
   async handle(
     @Query('page', queryValidationPipe) page: PageQueryParamSchema,

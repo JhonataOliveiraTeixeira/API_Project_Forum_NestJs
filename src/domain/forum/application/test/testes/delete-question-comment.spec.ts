@@ -19,8 +19,6 @@ describe('Delete Comment Question', () => {
 
     await inMemoryQuestionCommentRepositoy.create(comment)
 
-    console.log(comment.authorId.toString())
-
     await sut.execute({
       questionCommentId: comment.id.toString(),
       authorId: comment.authorId.toString(),

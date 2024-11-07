@@ -7,10 +7,9 @@ import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaAnswerComentRepository implements AnswerCommentRepository {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<AnswerComment | null> {
-    console.log(id)
     const comment = await this.prisma.comment.findUnique({
       where: {
         id,
